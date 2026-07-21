@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+echo "[pre-commit] running gate tests..."
+if [ -x ".venv/bin/pytest" ]; then
+    PYTHONPATH= .venv/bin/pytest -q
+else
+    PYTHONPATH= python3 -m pytest -q
+fi
+
+echo "[pre-commit] running gitleaks..."
+gitleaks_bin="$(command -v gitleaks || true)"
+if [ -z "$gitleaks_bin" ] && [ -x "$HOME/.local/bin/gitleaks" ]; then
+    gitleaks_bin="$HOME/.local/bin/gitleaks"
+fi
+if [ -z "$gitleaks_bin" ]; then
+    echo "[pre-commit] gitleaks not found (checked PATH and ~/.local/bin)" >&2
+    exit 1
+fi
+"$gitleaks_bin" protect --staged --redact --no-banner
+
+echo "[pre-commit] OK"

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>netwatch</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">nw</span>
+      <h1>netwatch</h1>
+      <span class="status" id="status-badge">idle</span>
+    </div>
+    <div class="controls">
+      <input id="static-hosts" type="text" placeholder="static hosts, comma-separated (e.g. 127.0.0.1,192.168.1.1)">
+      <input id="cidr" type="text" placeholder="CIDR for ARP sweep (needs privileges)">
+      <select id="method">
+        <option value="tcp" selected>tcp ping</option>
+        <option value="icmp">icmp ping</option>
+      </select>
+      <button id="btn-start" class="btn btn-primary">Start monitor</button>
+      <button id="btn-stop" class="btn">Stop</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="panel hosts">
+      <div class="panel-head">
+        <h2>Hosts</h2>
+        <span class="count" id="host-count">0 hosts</span>
+      </div>
+      <div class="table-wrap">
+        <table id="host-table">
+          <thead>
+            <tr><th>ip</th><th>mac</th><th>hostname</th><th>status</th><th>last rtt</th></tr>
+          </thead>
+          <tbody id="host-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel stats">
+        <h2>Statistics</h2>
+        <div class="metrics">
+          <div class="metric"><span id="m-up">0</span><label>up</label></div>
+          <div class="metric"><span id="m-down">0</span><label>down</label></div>
+          <div class="metric"><span id="m-avg-rtt">-</span><label>avg rtt ms</label></div>
+        </div>
+        <h3>Latency</h3>
+        <canvas id="latency-chart" height="120"></canvas>
+        <h3>Bandwidth</h3>
+        <canvas id="bandwidth-chart" height="120"></canvas>
+      </section>
+
+      <section class="panel alerts">
+        <h2>Alerts <span class="badge" id="alert-count">0</span></h2>
+        <ul id="alert-list" class="alert-list"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
